@@ -14,11 +14,12 @@ use strict;
 # 2 reverse fastq
 # 3 primer names, one of V4EMB, V6, etc
 
-my @lprimerlen = (19, 20, 19);
-my @rprimerlen = (20, 31, 18);
+my @lprimerlen = (19, 20, 19, 18);
+my @rprimerlen = (20, 31, 18, 17);
 
 my  $primer = 1;
 if ( defined $ARGV[3]){
+	$primer = 3 if $ARGV[3] eq "MCHII_SOSP";
 	$primer = 2 if $ARGV[3] eq "V6";
 	$primer = 0 if $ARGV[3] eq "ITS6";
 	$primer = 1 if $ARGV[3] eq "Kcnq1ot1";
@@ -26,6 +27,8 @@ if ( defined $ARGV[3]){
 }
 my %samples;
 my $bclen = 12; #Golay are 12-mers
+$bclen = 8 if $ARGV[3] eq "MCHII_SOSP";
+
 my $group ="reads";
 
 # open samples.txt file and make a hash of forwardbc-reversebc  with value sampleID
@@ -97,8 +100,10 @@ close IN1; close IN2;
 my @bc = keys(%samples);
 system(`mkdir "demultiplex_$group"`);
 for(my $i = 0; $i < @bc; $i++){
-	my $fileL = $samples{$bc[$i]} . "-" . $bc[$i] . "-R1.fastq";
-	my $fileR = $samples{$bc[$i]} . "-" . $bc[$i] . "-R2.fastq";
+#	my $fileL = $samples{$bc[$i]} . "-" . $bc[$i] . "-R1.fastq";
+#	my $fileR = $samples{$bc[$i]} . "-" . $bc[$i] . "-R2.fastq";
+	my $fileL = $samples{$bc[$i]} . "-R1.fastq";
+	my $fileR = $samples{$bc[$i]} . "-R2.fastq";
 
 	open (OUT, "> demultiplex_$group/$fileL") or die "$fileL unwritable $!\n";
 		print OUT $outputL{$bc[$i]} if $outputL{$bc[$i]};
